@@ -1,0 +1,26 @@
+#include <StructureConstants.au3>
+#include <Constants.au3>
+#include <WinAPIConv.au3>
+#include "..\GetScreen\GetScreen.au3"
+
+Local $hWnd = WinGetHandle("[CLASS:SciTEWindow]")
+
+; this calculates the screen position of the window
+Local $aWin = WinGetPos($hWnd)
+If @error Then Exit MsgBox($MB_SYSTEMMODAL, "", "Window not found")
+Local $Width = $aWin[2], $Height = $aWin[3]
+
+; this calculates the screen position of the client area of the window
+Local $tPoint = DllStructCreate($tagPOINT)
+$tPoint.X = 0
+$tPoint.Y = 0
+_WinAPI_ClientToScreen($hWnd, $tPoint)
+Local $xDiff = $tPoint.X - $aWin[0], $yDiff = $tPoint.Y - $aWin[1]
+
+MsgBox($MB_SYSTEMMODAL, "", "Diff from Window to Client = " & $xDiff & "/" & $yDiff)
+
+_GetScreen_Initialize($Width, $Height)
+_GetScreen_GetWindow($hWnd)
+
+Local $color = _GetScreen_GetPixel(52+$xDiff, 122+$yDiff) ; 52 and 122 are client coordinates
+MsgBox($MB_SYSTEMMODAL, "", Hex($color, 6))
